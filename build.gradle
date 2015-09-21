@@ -6,6 +6,8 @@ archivesBaseName = 'scheduling' // in case current folder is not named schedulin
 
 project.ext.set('nativeLibsDir', "$rootDir/dist/lib/")
 
+
+
 sonarRunner {
     sonarProperties {    
     	property "sonar.projectKey", "$project.group:Scheduling"
@@ -17,6 +19,7 @@ sonarRunner {
         property 'sonar.junit.reportsPath', "${buildDir}/test-results"
     }
 }
+
 
 configurations {
     nativeBundle
@@ -118,6 +121,10 @@ configure(javaSubprojects) {
     targetCompatibility = JavaVersion.VERSION_1_7
     
     compileJava.options.compilerArgs << '-Xlint:-options' // remove warning about bootstrap class path
+    
+    
+		
+	
 
     dependencies {
         compile 'log4j:log4j:1.2.17'
@@ -129,7 +136,10 @@ configure(javaSubprojects) {
         testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
 
         testCompile 'org.mockito:mockito-core:1.10.19'
+        testCompile 'org.powermock:powermock-mockito-release-full:1.6.2'
+		testCompile 'ObjectFaker:ObjectFaker:0.1-SNAPSHOT'
         testCompile 'com.jayway.awaitility:awaitility:1.6.0'
+		testCompile 'org.apache.commons:commons-lang3:3.4'
     }
 
     test {
@@ -203,9 +213,8 @@ project(':scheduler:scheduler-api') {
 
         compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
         compile 'org.apache.commons:commons-collections4:4.0'
-        //compile 'commons-collections:commons-collections:3.2'
         compile 'msv:isorelax:20050913'
-        compile 'msv:msv:20050913'
+
         compile 'commons-io:commons-io:2.4'
 
         compile project(':common-api')
@@ -246,6 +255,11 @@ project(':scheduler:scheduler-api') {
 }
 
 project('common-api') {
+
+	
+
+    
+
 
     dependencies {
         compile "org.objectweb.proactive:programming-annotation:${programmingVersion}"
