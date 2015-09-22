@@ -55,7 +55,7 @@ public class SelectionUtilsTest {
     @Test
     public void checkOSVersion() {
         assertFalse(SelectionUtils.checkOSVersion(null));
-        assertFalse(SelectionUtils.checkOSVersion("1.6"));
+        assertFalse(SelectionUtils.checkOSVersion("1.6.foobar"));
         assertTrue(SelectionUtils.checkOSVersion(System.getProperty("os.version")));
     }
 
