@@ -876,9 +876,9 @@ public interface Scheduler extends SchedulerUsage, ThirdPartyCredentials {
      * @throws NotConnectedException if you are not authenticated
      * @throws PermissionException if you have not enough permission to access this method
      */
-    
+    /*
     List<TaskInfo> getTasks(String jobId, int offset, int limit,
             List<SortParameter<TaskSortParameter>> sortParameters)
                     throws UnknownJobException, NotConnectedException, PermissionException;
-    
+    */
 }

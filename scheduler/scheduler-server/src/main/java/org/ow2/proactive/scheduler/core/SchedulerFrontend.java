@@ -1076,10 +1076,12 @@ public class SchedulerFrontend implements InitActive, Scheduler, RunActive {
     /**
      * {@inheritDoc}
      */
+    /*
 	@Override
 	public List<TaskInfo> getTasks(String jobId, int offset, int limit,
 			List<SortParameter<TaskSortParameter>> sortParameters)
 					throws UnknownJobException, NotConnectedException, PermissionException {
         return dbManager.getTasks(jobId, offset, limit, sortParameters);
 	}
+	*/
 }
