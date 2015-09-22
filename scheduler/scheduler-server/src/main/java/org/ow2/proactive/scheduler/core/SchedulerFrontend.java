@@ -72,6 +72,7 @@ import org.ow2.proactive.scheduler.common.SchedulerEvent;
 import org.ow2.proactive.scheduler.common.SchedulerEventListener;
 import org.ow2.proactive.scheduler.common.SchedulerState;
 import org.ow2.proactive.scheduler.common.SchedulerStatus;
+import org.ow2.proactive.scheduler.common.TaskSortParameter;
 import org.ow2.proactive.scheduler.common.exception.AlreadyConnectedException;
 import org.ow2.proactive.scheduler.common.exception.JobAlreadyFinishedException;
 import org.ow2.proactive.scheduler.common.exception.JobCreationException;
@@ -91,6 +92,7 @@ import org.ow2.proactive.scheduler.common.job.JobResult;
 import org.ow2.proactive.scheduler.common.job.JobState;
 import org.ow2.proactive.scheduler.common.task.SimpleTaskLogs;
 import org.ow2.proactive.scheduler.common.task.TaskId;
+import org.ow2.proactive.scheduler.common.task.TaskInfo;
 import org.ow2.proactive.scheduler.common.task.TaskResult;
 import org.ow2.proactive.scheduler.common.task.TaskState;
 import org.ow2.proactive.scheduler.common.usage.JobUsage;
@@ -1070,4 +1072,14 @@ public class SchedulerFrontend implements InitActive, Scheduler, RunActive {
                 "You do not have permission to remove third-party credentials from the scheduler!");
         dbManager.removeThirdPartyCredential(ident.getUsername(), key);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public List<TaskInfo> getTasks(String jobId, int offset, int limit,
+			List<SortParameter<TaskSortParameter>> sortParameters)
+					throws UnknownJobException, NotConnectedException, PermissionException {
+        return dbManager.getTasks(jobId, offset, limit, sortParameters);
+	}
 }

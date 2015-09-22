@@ -54,6 +54,7 @@ import org.ow2.proactive.scheduler.common.job.JobInfo;
 import org.ow2.proactive.scheduler.common.job.JobPriority;
 import org.ow2.proactive.scheduler.common.job.JobResult;
 import org.ow2.proactive.scheduler.common.job.JobState;
+import org.ow2.proactive.scheduler.common.task.TaskInfo;
 import org.ow2.proactive.scheduler.common.task.TaskResult;
 import org.ow2.proactive.scheduler.common.usage.SchedulerUsage;
 import org.ow2.proactive.scheduler.common.util.logforwarder.AppenderProvider;
@@ -863,4 +864,21 @@ public interface Scheduler extends SchedulerUsage, ThirdPartyCredentials {
      * These are meaningful users for accounting {@link SchedulerUsage}
      */
     List<SchedulerUserInfo> getUsersWithJobs() throws NotConnectedException, PermissionException;
+    
+    /**
+     * Retrieves all tasks of a Job (with pagination).
+     * @param jobId Job Id to retrieve the tasks from
+     * @param offset position of the task to start the retrieval
+     * @param limit position of the last job to retrieve
+     * @param sortParameters the sorting rules of the tasks
+     * @return the list of all tasks in the given pagination
+     * @throws UnknownJobException if the job does not exist
+     * @throws NotConnectedException if you are not authenticated
+     * @throws PermissionException if you have not enough permission to access this method
+     */
+    
+    List<TaskInfo> getTasks(String jobId, int offset, int limit,
+            List<SortParameter<TaskSortParameter>> sortParameters)
+                    throws UnknownJobException, NotConnectedException, PermissionException;
+    
 }

@@ -2,6 +2,8 @@ package org.ow2.proactive.scheduler.core.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +20,7 @@ import org.ow2.proactive.db.DatabaseManagerException;
 import org.ow2.proactive.db.FilteredExceptionCallback;
 import org.ow2.proactive.db.SortParameter;
 import org.ow2.proactive.scheduler.common.JobSortParameter;
+import org.ow2.proactive.scheduler.common.TaskSortParameter;
 import org.ow2.proactive.scheduler.common.job.JobId;
 import org.ow2.proactive.scheduler.common.job.JobInfo;
 import org.ow2.proactive.scheduler.common.job.JobPriority;
@@ -52,18 +55,37 @@ import org.ow2.proactive.utils.FileToBytesConverter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import org.apache.log4j.Logger;
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.Filter;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
+import org.hibernate.IdentifierLoadAccess;
+import org.hibernate.LobHelper;
+import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
+import org.hibernate.NaturalIdLoadAccess;
 import org.hibernate.Query;
+import org.hibernate.ReplicationMode;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.SharedSessionBuilder;
+import org.hibernate.SimpleNaturalIdLoadAccess;
+import org.hibernate.Transaction;
+import org.hibernate.TypeHelper;
+import org.hibernate.UnknownProfileException;
+import org.hibernate.Session.LockRequest;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.jdbc.ReturningWork;
+import org.hibernate.jdbc.Work;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.hibernate.stat.SessionStatistics;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 
 import static org.ow2.proactive.authentication.crypto.HybridEncryptionUtil.HybridEncryptedData;
@@ -210,22 +232,22 @@ public class SchedulerDBManager {
                     for (SortParameter<JobSortParameter> param : sortParameters) {
                         switch (param.getParameter()) {
                             case ID:
-                                sortOrder = configureSortOrder(param, Property.forName("id"));
+                                sortOrder = configureSortOrderJob(param, Property.forName("id"));
                                 break;
                             case NAME:
-                                sortOrder = configureSortOrder(param, Property.forName("jobName"));
+                                sortOrder = configureSortOrderJob(param, Property.forName("jobName"));
                                 break;
                             case OWNER:
-                                sortOrder = configureSortOrder(param, Property.forName("owner"));
+                                sortOrder = configureSortOrderJob(param, Property.forName("owner"));
                                 break;
                             case PRIORITY:
-                                sortOrder = configureSortOrder(param, Property.forName("priority"));
+                                sortOrder = configureSortOrderJob(param, Property.forName("priority"));
                                 break;
                             case STATE:
                                 sortOrder = new GroupByStatusSortOrder(param.getSortOrder(), "status");
                                 break;
                             default:
-                                throw new IllegalArgumentException("Unsupported sort paramter: " +
+                                throw new IllegalArgumentException("Unsupported sort parameter: " +
                                     param.getParameter());
                         }
                         criteria.addOrder(sortOrder);
@@ -245,7 +267,56 @@ public class SchedulerDBManager {
         });
     }
 
-    private Order configureSortOrder(SortParameter<JobSortParameter> param, Property property) {
+    // TODO : paraita
+    public List<TaskInfo> getTasks(final String jobId, final int offset, final int limit,
+            final List<SortParameter<TaskSortParameter>> sortParameters) {
+
+        return runWithoutTransaction(new SessionWork<List<TaskInfo>>() {
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<TaskInfo> executeWork(Session session) {
+                Criteria criteria = session.createCriteria(TaskData.class);
+                if (limit > 0)
+                    criteria.setMaxResults(limit);
+                if (offset >= 0)
+                    criteria.setFirstResult(offset);
+                if (sortParameters != null) {
+                    Order sortOrder;
+                    for (SortParameter<TaskSortParameter> param : sortParameters) {
+                        switch (param.getParameter()) {
+                            case ID:
+                                sortOrder = configureSortOrderTask(param, Property.forName("id"));
+                                break;
+                            case NAME:
+                                sortOrder = configureSortOrderTask(param, Property.forName("name"));
+                            default:
+                                throw new IllegalArgumentException("Unsupported sort parameter: " +
+                                        param.getParameter());
+                        }
+                        criteria.addOrder(sortOrder);
+                    }
+                }
+                List<TaskData> tasksList = criteria.list();
+                List<TaskInfo> result = new ArrayList<>(tasksList.size());
+                for (TaskData taskData : tasksList) {
+                    TaskInfo taskInfo = taskData.toTaskInfo();
+                    result.add(taskInfo);
+                }
+                return result;
+            }
+        });
+    }
+    
+    private Order configureSortOrderJob(SortParameter<JobSortParameter> param, Property property) {
+        if (param.getSortOrder().isAscending()) {
+            return property.asc();
+        } else {
+            return property.desc();
+        }
+    }
+    
+    private Order configureSortOrderTask(SortParameter<TaskSortParameter> param, Property property) {
         if (param.getSortOrder().isAscending()) {
             return property.asc();
         } else {

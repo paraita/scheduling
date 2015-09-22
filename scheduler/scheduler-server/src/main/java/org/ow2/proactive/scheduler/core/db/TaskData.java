@@ -26,6 +26,7 @@ import org.ow2.proactive.scheduler.common.task.ParallelEnvironment;
 import org.ow2.proactive.scheduler.common.task.PropertyModifier;
 import org.ow2.proactive.scheduler.common.task.RestartMode;
 import org.ow2.proactive.scheduler.common.task.TaskId;
+import org.ow2.proactive.scheduler.common.task.TaskInfo;
 import org.ow2.proactive.scheduler.common.task.TaskStatus;
 import org.ow2.proactive.scheduler.common.task.dataspaces.InputSelector;
 import org.ow2.proactive.scheduler.common.task.dataspaces.OutputSelector;
@@ -35,6 +36,7 @@ import org.ow2.proactive.scheduler.core.properties.PASchedulerProperties;
 import org.ow2.proactive.scheduler.job.InternalJob;
 import org.ow2.proactive.scheduler.job.JobIdImpl;
 import org.ow2.proactive.scheduler.task.TaskIdImpl;
+import org.ow2.proactive.scheduler.task.TaskInfoImpl;
 import org.ow2.proactive.scheduler.task.containers.ExecutableContainer;
 import org.ow2.proactive.scheduler.task.containers.ScriptExecutableContainer;
 import org.ow2.proactive.scheduler.task.internal.InternalForkedScriptTask;
@@ -967,5 +969,29 @@ public class TaskData {
             getExecutionDuration(), getParallelEnvironment() == null ? 1 : getParallelEnvironment()
                     .getNodesNumber());
     }
-
+    
+    // TODO: test
+    TaskInfoImpl createTaskInfo(JobIdImpl jobId) {
+        TaskId taskId = TaskIdImpl.createTaskId(jobId, getTaskName(), getId().getTaskId());
+        TaskInfoImpl taskInfo = new TaskInfoImpl();
+        taskInfo.setTaskId(taskId);
+        taskInfo.setStatus(getTaskStatus());
+        taskInfo.setStartTime(getStartTime());
+        //taskInfo.getProgress(0); TODO: how do I fetch progress ?
+        taskInfo.setNumberOfExecutionOnFailureLeft(getNumberOfExecutionOnFailureLeft());
+        taskInfo.setNumberOfExecutionLeft(getNumberOfExecutionLeft());
+        taskInfo.setJobInfo(getJobData().toJobInfo());
+        taskInfo.setJobId(jobId);
+        taskInfo.setFinishedTime(getFinishedTime());
+        taskInfo.setExecutionHostName(getExecutionHostName());
+        taskInfo.setExecutionDuration(getExecutionDuration());
+        return taskInfo;
+    }
+    
+    // TODO: create toTaskInfo method
+    TaskInfo toTaskInfo() {
+        JobIdImpl jobId = new JobIdImpl(getJobData().getId(), getJobData().getJobName());
+        TaskInfoImpl taskInfo = createTaskInfo(jobId);
+        return taskInfo;
+    }
 }
