@@ -214,7 +214,7 @@ project(':scheduler:scheduler-api') {
         compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
         compile 'org.apache.commons:commons-collections4:4.0'
         compile 'msv:isorelax:20050913'
-
+		compile 'msv:msv:20050913'
         compile 'commons-io:commons-io:2.4'
 
         compile project(':common-api')

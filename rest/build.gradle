@@ -73,6 +73,7 @@ project(':rest:rest-server') {
             ]
         }
     }
+
     dependencies {
         compile 'org.jboss.resteasy:resteasy-jackson-provider:3.0.13.Final'
         compile 'org.jboss.resteasy:resteasy-multipart-provider:3.0.13.Final'
@@ -95,10 +96,6 @@ project(':rest:rest-server') {
         compile project(':rest:rest-api')
 
         testCompile functionalTestDependencies
-        testCompile 'org.apache.httpcomponents:httpmime:4.2.1'
-        testCompile 'org.jboss.resteasy:tjws:3.0.6.Final'
-        testCompile 'org.mockito:mockito-core:1.9.5'
-        testCompile 'org.eclipse.jetty:test-jetty-servlet:8.1.15.v20140411'
 
         testCompile 'org.apache.httpcomponents:httpmime:4.2.6'
         testCompile 'org.jboss.resteasy:tjws:3.0.13.Final'
@@ -126,7 +123,7 @@ project(':rest:rest-server') {
     functionalTest.dependsOn rootProject.dist
     clean.dependsOn rootProject.cleanDist
 
-    task proActiveWar(type: Sync, dependsOn: [ classes, stub ]) {
+    task proActiveWar(type: Sync, dependsOn: [classes, stub, tasks.miredot]) {
         from "src/main/webapp"
 
         def schedulerNodeJar = project(":scheduler:scheduler-node").standaloneJar
@@ -170,8 +167,18 @@ project(':rest:rest-cli') {
         compile project(":common-api")
         compile project(':rest:rest-api')
 
-        testCompile 'org.eclipse.jetty:jetty-server:9.2.13.v20150730'
+        testCompile functionalTestDependencies
+        testCompile project(":rest:rest-server").sourceSets.test.output
     }
+
+    test {
+        exclude 'functionaltests/**'
+    }
+
+    task('functionalTest', type: Test).configure functionalTestConfiguration
+
+    functionalTest.dependsOn rootProject.dist
+    clean.dependsOn rootProject.cleanDist
 
 }
 
