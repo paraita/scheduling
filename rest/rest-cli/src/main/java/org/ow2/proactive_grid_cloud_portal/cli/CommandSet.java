@@ -170,7 +170,7 @@ public class CommandSet {
             .longOpt("listjobtasks")
             .description(
                     "Retrieve the list of tasks names for a given job and a specified tag.")
-            .hasArgs(true).hasOptionalArg(true).argNames("jobId tag").jsCommand("listtasks(job-id[,tag])")
+            .hasArgs(true).hasOptionalArg(true).argNames("jobId tag offset limit").jsCommand("listtasks(job-id[,[tag|offset,limit]])")
             .commandClass(ListJobTasksCommand.class)
             .entry();
 
