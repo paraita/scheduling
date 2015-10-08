@@ -36,41 +36,40 @@
  */
 package org.ow2.proactive_grid_cloud_portal.cli.cmd.sched;
 
+import java.util.List;
+
 import org.ow2.proactive_grid_cloud_portal.cli.ApplicationContext;
 import org.ow2.proactive_grid_cloud_portal.cli.CLIException;
-import org.ow2.proactive_grid_cloud_portal.cli.cmd.AbstractJobCommand;
 import org.ow2.proactive_grid_cloud_portal.cli.cmd.Command;
 import org.ow2.proactive_grid_cloud_portal.cli.utils.StringUtility;
-import org.ow2.proactive_grid_cloud_portal.common.SchedulerRestInterface;
+import org.ow2.proactive_grid_cloud_portal.common.SchedulerTasksRestInterface;
 import org.ow2.proactive_grid_cloud_portal.scheduler.dto.TaskStateData;
 
-import java.util.List;
 
 /**
  * @author  the activeeon team.
  */
 public class ListTaskStatesCommand extends AbstractJobTagPaginatedCommand implements Command {
-    
-    public ListTaskStatesCommand(String jobId){
+
+    public ListTaskStatesCommand(String jobId) {
         super(jobId);
     }
 
-    public ListTaskStatesCommand(String jobId, String tag){
+    public ListTaskStatesCommand(String jobId, String tag) {
         super(jobId, tag);
     }
-    
+
     public ListTaskStatesCommand(String jobId, String tag, String offset, String limit) {
         super(jobId, tag, offset, limit);
     }
-    
+
     public ListTaskStatesCommand(String jobId, String offset, String limit) {
         super(jobId, offset, limit);
     }
 
-
     @Override
     public void execute(ApplicationContext currentContext) throws CLIException {
-        SchedulerRestInterface scheduler = currentContext.getRestClient().getScheduler();
+        SchedulerTasksRestInterface scheduler = currentContext.getRestClient().getJobTaskScheduler();
         try {
             List<TaskStateData> tasks = null;
             if (this.tag == null) {

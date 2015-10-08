@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ow2.proactive_grid_cloud_portal.common.SchedulerRestInterface;
+import org.ow2.proactive_grid_cloud_portal.common.SchedulerTasksRestInterface;
 import org.ow2.proactive_grid_cloud_portal.scheduler.dto.JobIdData;
 import org.ow2.proactive_grid_cloud_portal.scheduler.dto.JobResultData;
 import org.ow2.proactive_grid_cloud_portal.scheduler.dto.JobStateData;
@@ -57,6 +58,7 @@ public class SchedulerClientExample {
         // LOGIN IN
         SchedulerRestClient client = new SchedulerRestClient("http://localhost:9191/rest/rest/");
         SchedulerRestInterface scheduler = client.getScheduler();
+        SchedulerTasksRestInterface jobTasksScheduler = client.getJobTaskScheduler();
         String sessionId = scheduler.login("admin", "admin");
 
         // JOB SUBMISSION
@@ -87,11 +89,12 @@ public class SchedulerClientExample {
         TaskResultData taskresult = scheduler.taskresult(sessionId, Long.toString(flatJob.getId()), "task_1");
         System.out.println(taskresult);
 
-        List<TaskStateData> jobTaskStates = scheduler.getJobTaskStates(sessionId, Long.toString(flatJob
-                .getId()));
+        List<TaskStateData> jobTaskStates = jobTasksScheduler.getJobTaskStates(sessionId,
+                Long.toString(flatJob.getId()));
         System.out.println(jobTaskStates);
 
-        TaskStateData task_1 = scheduler.jobtasks(sessionId, Long.toString(flatJob.getId()), "task_1");
+        TaskStateData task_1 = jobTasksScheduler.jobtasks(sessionId, Long.toString(flatJob.getId()),
+                "task_1");
         System.out.println(task_1);
 
         // OTHER CALLS
