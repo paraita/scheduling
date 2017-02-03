@@ -36,7 +36,8 @@ import org.hibernate.type.SerializableToBlobType;
                 query = "select taskResult, " + "task.id, " + "task.taskName, " +
                         "task.preciousResult from TaskResultData as taskResult join taskResult.taskRuntimeData as task " +
                         "where task.id in (:tasksIds) order by task.id, taskResult.resultTime desc"
-        )
+        ),
+        @NamedQuery(name = "countTaskResultData", query = "select count (*) from TaskResultData")
 })
 @Table(name = "TASK_RESULT_DATA", indexes = {
         @Index(name = "TASK_RESULT_DATA_RUNTIME_DATA", columnList = "JOB_ID,TASK_ID")

@@ -48,7 +48,7 @@ import com.google.common.collect.Lists;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "checkJobExistence", query = "select id from JobData where id = :id"),
-        @NamedQuery(name = "countJobData", query = "count (*) from JobData"),
+        @NamedQuery(name = "countJobData", query = "select count (*) from JobData"),
         @NamedQuery(name = "deleteJobData", query = "delete from JobData where id = :jobId"),
         @NamedQuery(name = "findUsersWithJobs", query = "select owner, count(owner), max(submittedTime) from JobData group by owner"),
         @NamedQuery(name = "getJobsNumberWithStatus", query = "select count(*) from JobData where status in (:status) and removedTime = -1"),

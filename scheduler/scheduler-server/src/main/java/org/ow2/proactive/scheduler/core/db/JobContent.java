@@ -32,7 +32,9 @@ import org.ow2.proactive.scheduler.util.ByteCompressionUtils;
  *
  */
 @Entity
-@NamedQueries({ @NamedQuery(name = "loadJobContent", query = "from JobContent as content where content.jobId = :id") })
+@NamedQueries({
+		@NamedQuery(name = "loadJobContent", query = "from JobContent as content where content.jobId = :id"),
+		@NamedQuery(name = "countJobContent", query = "select count (*) from JobContent")})
 @Table(name = "JOB_CONTENT", indexes = { @Index(name = "INITIAL_JOB_INDEX", columnList = "JOB_ID") })
 public class JobContent implements Serializable {
 

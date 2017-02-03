@@ -20,6 +20,7 @@ import java.util.Set;
                 name = "deleteSelectorData",
                 query = "delete from SelectorData where taskData.id.jobId = :jobId"
         ),
+        @NamedQuery(name = "countSelectorData", query = "select count (*) from SelectorData")
 })
 @Table(name = "DS_SELECTOR_DATA", indexes = {
         @Index(name = "DS_SELECTOR_DATA_JOB_ID", columnList = "JOB_ID"),

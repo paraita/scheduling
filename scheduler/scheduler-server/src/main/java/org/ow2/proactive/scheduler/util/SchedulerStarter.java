@@ -126,6 +126,9 @@ public class SchedulerStarter {
         Options options = getOptions();
 
         try {
+
+
+
             CommandLine commandLine = getCommandLine(args, options);
             if (commandLine.hasOption("h")) {
                 displayHelp(options);

@@ -57,7 +57,8 @@ import java.io.Serializable;
         @NamedQuery(
                 name = "hasThirdPartyCredentials",
                 query = "select count(*) from ThirdPartyCredentialData where username = :username"
-        )
+        ),
+        @NamedQuery(name = "countThirdPartyCredentialData", query = "select count (*) from ThirdPartyCredentialData")
 })
 @Table(name = "THIRD_PARTY_CREDENTIAL_DATA")
 public class ThirdPartyCredentialData implements Serializable {

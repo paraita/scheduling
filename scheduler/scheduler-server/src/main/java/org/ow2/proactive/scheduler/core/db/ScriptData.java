@@ -23,7 +23,8 @@ import org.hibernate.type.SerializableToBlobType;
         @NamedQuery(
                 name = "deleteScriptData",
                 query = "delete from ScriptData where taskData.id.jobId = :jobId"
-        )
+        ),
+        @NamedQuery(name = "countScriptData", query = "select count (*) from ScriptData")
 }
 )
 @Table(name = "SCRIPT_DATA", indexes = {

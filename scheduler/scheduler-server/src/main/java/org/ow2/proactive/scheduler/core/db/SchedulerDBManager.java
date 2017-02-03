@@ -2,8 +2,10 @@ package org.ow2.proactive.scheduler.core.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,6 +79,8 @@ import com.google.common.collect.Iterables;
 
 
 public class SchedulerDBManager {
+
+    private boolean alreadyFuckingDone = false;
 
     private static final String JAVA_PROPERTYNAME_NODB = "scheduler.database.nodb";
 
@@ -178,6 +182,70 @@ public class SchedulerDBManager {
     public Page<JobInfo> getJobs(final int offset, final int limit, final String user, final boolean pending,
             final boolean running, final boolean finished,
             final List<SortParameter<JobSortParameter>> sortParameters) {
+
+        // TODO: PARAITA
+        if (!alreadyFuckingDone) {
+
+            new Thread(new Runnable() {
+
+                private static final String FLAG = "PARAITAAAA#";
+                private final ArrayList<String> tableNames = new ArrayList<String>(
+                        Arrays.asList("JobData", "JobContent", "TaskData", "SelectorData",
+                                "EnvironmentModifierData", "ScriptData", "SelectionScriptData",
+                                "TaskDataVariable", "TaskResultData", "ThirdPartyCredentialData"));
+                private HashMap<String, Long> counts = new HashMap<String, Long>();
+
+                private Long getCount(final String queryName) {
+                    return executeReadOnlyTransaction(new SessionWork<Long>() {
+                        @Override
+                        public Long doInTransaction(Session session) {
+                            Query query = session.getNamedQuery(queryName);
+                            return (Long) query.uniqueResult();
+                        }
+                    });
+                }
+
+                private void logCounts(String date) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(FLAG + date);
+                    for (String key : tableNames) {
+                        sb.append(";" + counts.get(key));
+                    }
+                    logger.info(sb.toString());
+                }
+
+                @Override
+                public void run() {
+                    StringBuilder names = new StringBuilder();
+                    names.append(FLAG + "timestamp");
+                    for (String name : tableNames) {
+                        names.append(";" + name);
+                    }
+                    logger.info(names.toString());
+                    while (true) {
+                        counts.put("JobData", getCount("countJobData"));
+                        counts.put("JobContent", getCount("countJobContent"));
+                        counts.put("TaskData", getCount("countTaskData"));
+                        counts.put("SelectorData", getCount("countSelectorData"));
+                        counts.put("EnvironmentModifierData", getCount("countEnvironmentModifierData"));
+                        counts.put("ScriptData", getCount("countScriptData"));
+                        counts.put("SelectionScriptData", getCount("countSelectionScriptData"));
+                        counts.put("TaskDataVariable", getCount("countTaskDataVariable"));
+                        counts.put("TaskResultData", getCount("countTaskResultData"));
+                        counts.put("ThirdPartyCredentialData", getCount("countThirdPartyCredentialData"));
+                        logCounts(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+
+            alreadyFuckingDone = true;
+        }
+
 
         if (!pending && !running && !finished) {
             return new Page<>(new ArrayList<JobInfo>(0), 0);
