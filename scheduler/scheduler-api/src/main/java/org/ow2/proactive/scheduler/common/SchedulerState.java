@@ -83,6 +83,12 @@ public interface SchedulerState extends Serializable {
     SchedulerUsers getUsers();
 
     /**
+     * Returns the total number of jobs (pending, running and finished)
+     * @return the total number of jobs accessible from the scheduler
+     */
+    int getTotalNbJobs();
+
+    /**
      * Updates the scheduler state given the event passed as a parameter
      */
     void update(SchedulerEvent eventType);
