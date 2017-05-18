@@ -172,13 +172,22 @@ public final class SchedulerStateImpl implements SchedulerState {
         return sUsers;
     }
 
-    /**
+/**
      * Sets the list of connected users to the given users value.
      *
      * @param users the list of connected users to set.
      */
     public void setUsers(SchedulerUsers users) {
         sUsers = users;
+    }
+
+@Override
+    public int getTotalNbJobs() {
+        return jobs.size();
+    }
+
+    public synchronized void updateUser(UserIdentification identification) {
+        sUsers.update(identification);
     }
 
     /**
@@ -277,6 +286,7 @@ public final class SchedulerStateImpl implements SchedulerState {
                 break;
             case JOB_REMOVE_FINISHED:
                 removeFinished(js);
+                logger.info("HOUSEKEEPING SchedulerStateImpl removed " + js.getId());
                 break;
             case JOB_PENDING_TO_RUNNING:
                 pendingToRunning(js);
