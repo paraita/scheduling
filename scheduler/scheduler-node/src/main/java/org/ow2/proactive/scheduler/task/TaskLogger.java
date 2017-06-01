@@ -28,20 +28,27 @@ package org.ow2.proactive.scheduler.task;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Hierarchy;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.DefaultRepositorySelector;
 import org.apache.log4j.spi.LoggingEvent;
 import org.ow2.proactive.scheduler.common.task.Log4JTaskLogs;
 import org.ow2.proactive.scheduler.common.task.TaskId;
 import org.ow2.proactive.scheduler.common.task.TaskLogs;
 import org.ow2.proactive.scheduler.common.util.TaskLoggerRelativePathGenerator;
 import org.ow2.proactive.scheduler.common.util.logforwarder.AppenderProvider;
+import org.ow2.proactive.scheduler.common.util.logforwarder.Log4JRemover;
 import org.ow2.proactive.scheduler.common.util.logforwarder.LogForwardingException;
 import org.ow2.proactive.scheduler.common.util.logforwarder.appenders.AsyncAppenderWithStorage;
 import org.ow2.proactive.scheduler.common.util.logforwarder.util.LoggingOutputStream;
@@ -72,13 +79,18 @@ public class TaskLogger {
 
     private final AtomicBoolean loggersActivated = new AtomicBoolean(false);
 
+    private final Logger taskLogger;
+
+    private final String name;
+
     public TaskLogger(TaskId taskId, String hostname) {
         logger.debug("Create task logger");
 
         this.taskId = taskId;
         this.hostname = hostname;
 
-        Logger taskLogger = createLog4jLogger(taskId);
+        taskLogger = createLog4jLogger(taskId);
+        name = taskLogger.getName();
 
         outputSink = new PrintStream(new LoggingOutputStream(taskLogger, Log4JTaskLogs.STDOUT_LEVEL), true);
         errorSink = new PrintStream(new LoggingOutputStream(taskLogger, Log4JTaskLogs.STDERR_LEVEL), true);
@@ -114,6 +126,10 @@ public class TaskLogger {
             }
         }
         return logMaxSize;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public TaskLogs getLogs() {
@@ -215,6 +231,9 @@ public class TaskLogger {
                 if (taskLogAppender != null) {
                     taskLogAppender.close();
                 }
+
+                taskLogger.removeAllAppenders();
+                Log4JRemover.removeLogger(name);
                 logger.debug("Task logger closed");
             }
         }

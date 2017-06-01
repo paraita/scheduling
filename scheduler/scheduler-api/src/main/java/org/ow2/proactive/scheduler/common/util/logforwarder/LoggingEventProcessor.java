@@ -40,8 +40,6 @@ import org.apache.log4j.spi.RootLogger;
 
 public class LoggingEventProcessor {
 
-    public static final Logger logger = Logger.getLogger(LoggingEventProcessor.class);
-
     NoWarningHierarchy h = new NoWarningHierarchy();
 
     public void addAppender(String loggerName, Appender appender) {
@@ -72,25 +70,10 @@ public class LoggingEventProcessor {
 
         public NoWarningHierarchy() {
             super(new RootLogger(Level.ALL));
-
-            initLoggersTable();
-        }
-
-        private void initLoggersTable() {
-            try {
-                Field ht = Hierarchy.class.getDeclaredField("ht");
-                ht.setAccessible(true);
-                loggersTable = (Hashtable) ht.get(this);
-
-            } catch (Exception e) {
-                logger.warn("Unable to access Log4J logger table, logger removal will be disabled", e);
-            }
         }
 
         public void removeLogger(String loggerName) {
-            if (loggersTable != null) {
-                loggersTable.remove(loggerName);
-            }
+            Log4JRemover.removeLogger(loggerName, this);
         }
 
         @Override
