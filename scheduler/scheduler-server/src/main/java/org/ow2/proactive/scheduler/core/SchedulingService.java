@@ -28,6 +28,7 @@ package org.ow2.proactive.scheduler.core;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1050,9 +1051,13 @@ public class SchedulingService {
                 ServerJobAndTaskLogs.remove(jobId);
                 submitTerminationDataHandler(terminationData);
             }
-
-            List<InternalJob> jobsFromDB = getInfrastructure().getDBManager()
-                                                              .loadJobWithTasksIfNotRemoved(jobIdList.toArray(new JobId[0]));
+            List<InternalJob> jobsFromDB;
+            if (!jobIdList.isEmpty()) {
+                jobsFromDB = getInfrastructure().getDBManager()
+                                                .loadJobWithTasksIfNotRemoved(jobIdList.toArray(new JobId[0]));
+            } else {
+                jobsFromDB = Collections.emptyList();
+            }
 
             for (InternalJob job : jobsFromDB) {
                 if (job != null) {
