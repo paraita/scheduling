@@ -488,11 +488,13 @@ public class SchedulingService {
     }
 
     public void scheduleJobRemove(JobId jobId, long at) {
-        InternalJob job = infrastructure.getDBManager().loadJobWithTasksIfNotRemoved(jobId);
+        List<InternalJob> jobs = infrastructure.getDBManager().loadJobWithTasksIfNotRemoved(jobId);
         boolean shouldRemoveFromDb = PASchedulerProperties.JOB_REMOVE_FROM_DB.getValueAsBoolean();
 
-        if (job != null) {
-            infrastructure.getDBManager().scheduleJobForRemoval(job.getJobInfo().getJobId(), at, shouldRemoveFromDb);
+        if (jobs.size() == 1) {
+            infrastructure.getDBManager().scheduleJobForRemoval(jobs.get(0).getJobInfo().getJobId(),
+                                                                at,
+                                                                shouldRemoveFromDb);
         }
     }
 
@@ -1043,18 +1045,24 @@ public class SchedulingService {
             List<Long> longList = new ArrayList<>(jobIdList.size());
             for (JobId jobId : jobIdList) {
                 TerminationData terminationData = jobs.removeJob(jobId);
+                ServerJobAndTaskLogs.remove(jobId);
                 submitTerminationDataHandler(terminationData);
-                InternalJob job = getInfrastructure().getDBManager().loadJobWithTasksIfNotRemoved(jobId);
+            }
+
+            List<InternalJob> jobsFromDB = getInfrastructure().getDBManager()
+                                                              .loadJobWithTasksIfNotRemoved(jobIdList.toArray(new JobId[0]));
+
+            for (InternalJob job : jobsFromDB) {
                 if (job != null) {
                     job.setRemovedTime(System.currentTimeMillis());
-                    ServerJobAndTaskLogs.remove(jobId);
                     getListener().jobStateUpdated(job.getOwner(),
                                                   new NotificationData<JobInfo>(SchedulerEvent.JOB_REMOVE_FINISHED,
                                                                                 new JobInfoImpl((JobInfoImpl) job.getJobInfo())));
                     getListener().jobUpdatedFullData(job);
                 }
-                longList.add(jobId.longValue());
+                longList.add(job.getId().longValue());
             }
+
             wakeUpSchedulingThread();
             return longList;
         }
