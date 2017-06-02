@@ -172,7 +172,7 @@ public final class SchedulerStateImpl implements SchedulerState {
         return sUsers;
     }
 
-/**
+    /**
      * Sets the list of connected users to the given users value.
      *
      * @param users the list of connected users to set.
@@ -181,7 +181,7 @@ public final class SchedulerStateImpl implements SchedulerState {
         sUsers = users;
     }
 
-@Override
+    @Override
     public int getTotalNbJobs() {
         return jobs.size();
     }
