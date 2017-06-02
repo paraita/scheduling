@@ -25,15 +25,10 @@
  */
 package org.ow2.proactive.scheduler.common.util.logforwarder;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Hashtable;
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.RootLogger;
 
@@ -65,8 +60,6 @@ public class LoggingEventProcessor {
     }
 
     private static class NoWarningHierarchy extends Hierarchy {
-
-        private Hashtable loggersTable;
 
         public NoWarningHierarchy() {
             super(new RootLogger(Level.ALL));

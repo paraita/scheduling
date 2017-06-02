@@ -1075,21 +1075,25 @@ public class SchedulingService {
         @Override
         public void run() {
             long timeNow = System.currentTimeMillis();
-            List<JobId> jobIdList = getInfrastructure().getDBManager().getJobsToRemove(timeNow);
+            try {
+                List<JobId> jobIdList = getInfrastructure().getDBManager().getJobsToRemove(timeNow);
 
-            // remove from the memory context
-            long inMemoryTimeStart = System.currentTimeMillis();
-            List<Long> longJobIdList = removeFromContext(jobIdList);
-            long inMemoryTimeStop = System.currentTimeMillis();
+                // remove from the memory context
+                long inMemoryTimeStart = System.currentTimeMillis();
+                List<Long> longJobIdList = removeFromContext(jobIdList);
+                long inMemoryTimeStop = System.currentTimeMillis();
 
-            // set the removedTime and also remove if required by the JOB_REMOVE_FROM_DB setting
-            long dbTimeStart = System.currentTimeMillis();
-            removeFromDB(longJobIdList);
-            long dbTimeStop = System.currentTimeMillis();
+                // set the removedTime and also remove if required by the JOB_REMOVE_FROM_DB setting
+                long dbTimeStart = System.currentTimeMillis();
+                removeFromDB(longJobIdList);
+                long dbTimeStop = System.currentTimeMillis();
 
-            logger.info("HOUSEKEEPING of jobs " + longJobIdList + " performed (Hibernate context removal took " +
-                        (inMemoryTimeStop - inMemoryTimeStart) + " ms" + " and db removal took " +
-                        (dbTimeStop - dbTimeStart) + " ms)");
+                logger.info("HOUSEKEEPING of jobs " + longJobIdList + " performed (Hibernate context removal took " +
+                            (inMemoryTimeStop - inMemoryTimeStart) + " ms" + " and db removal took " +
+                            (dbTimeStop - dbTimeStart) + " ms)");
+            } catch (Throwable e) {
+                logger.error("Error performing HOUSEKEEPING of jobs", e);
+            }
         }
     }
 

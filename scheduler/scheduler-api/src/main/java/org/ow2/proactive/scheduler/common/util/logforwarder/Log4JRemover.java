@@ -73,7 +73,9 @@ public class Log4JRemover {
 
             Object key = categoryKeyConstructor.newInstance(name);
 
-            ht.remove(key);
+            synchronized (ht) {
+                ht.remove(key);
+            }
 
         } catch (Exception e) {
             logger.warn("Unable to access Log4J logger table, logger removal will be disabled", e);
