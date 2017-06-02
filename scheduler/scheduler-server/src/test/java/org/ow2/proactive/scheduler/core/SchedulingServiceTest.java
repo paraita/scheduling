@@ -321,7 +321,8 @@ public class SchedulingServiceTest {
 
     @Test
     public void testScheduleJobRemoveShouldUseHousekeepingButAlreadyRemoved() {
-        Mockito.when(schedulerDBManager.loadJobWithTasksIfNotRemoved(any(JobId.class))).thenReturn(null);
+        Mockito.when(schedulerDBManager.loadJobWithTasksIfNotRemoved(any(JobId.class)))
+               .thenReturn(Collections.<InternalJob> emptyList());
 
         JobId jobId = JobIdImpl.makeJobId("42");
         schedulingService.scheduleJobRemove(jobId, 42);
