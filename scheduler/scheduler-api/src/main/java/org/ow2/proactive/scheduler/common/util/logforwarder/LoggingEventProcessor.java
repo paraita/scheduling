@@ -43,6 +43,9 @@ public class LoggingEventProcessor {
 
     public void removeAllAppenders(String loggerName) {
         h.getLogger(loggerName).removeAllAppenders();
+    }
+
+    public void removeLogger(String loggerName) {
         h.removeLogger(loggerName);
     }
 
