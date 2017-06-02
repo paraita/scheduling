@@ -1061,9 +1061,9 @@ public class SchedulingService {
                                                   new NotificationData<JobInfo>(SchedulerEvent.JOB_REMOVE_FINISHED,
                                                                                 new JobInfoImpl((JobInfoImpl) job.getJobInfo())));
                     getListener().jobUpdatedFullData(job);
-                    logger.info("HOUSEKEEPING sent JOB_REMOVE_FINISHED notification for job " + jobId);
+                    logger.info("HOUSEKEEPING sent JOB_REMOVE_FINISHED notification for job " + job.getId());
                 } else {
-                    logger.info("HOUSEKEEPING tried to remove job " + jobId + " but couldnt' find it in DB");
+                    logger.info("HOUSEKEEPING tried to remove job " + job.getId() + " but couldnt' find it in DB");
                 }
                 longList.add(job.getId().longValue());
             }
