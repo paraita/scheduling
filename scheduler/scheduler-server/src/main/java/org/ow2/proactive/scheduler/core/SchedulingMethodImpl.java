@@ -205,6 +205,7 @@ public final class SchedulingMethodImpl implements SchedulingMethod {
             schedulingService.unlockJobsToSchedule(toUnlock.values());
             toUnlock = null;
 
+            long startTimeLoop = System.currentTimeMillis();
             while (!taskRetrievedFromPolicy.isEmpty()) {
 
                 if (freeResources.isEmpty()) {
@@ -235,7 +236,10 @@ public final class SchedulingMethodImpl implements SchedulingMethod {
                     break;
                 }
 
+                long startTime = System.currentTimeMillis();
                 NodeSet nodeSet = getRMNodes(jobMap, neededResourcesNumber, tasksToSchedule, freeResources);
+                long endTime = System.currentTimeMillis();
+                logger.info("PARAITAAAA [getRMNodes:" + (endTime - startTime) + " ms]");
 
                 if (nodeSet != null) {
                     freeResources.removeAll(nodeSet.getAllNodesUrls());
@@ -295,6 +299,9 @@ public final class SchedulingMethodImpl implements SchedulingMethod {
                     }
                 }
             }
+            long endTimeLoop = System.currentTimeMillis();
+            logger.info("PARAITAAAA [while taskRetrievedFromPolicy_not_empty:" + (endTimeLoop - startTimeLoop) +
+                        " ms]");
 
             return numberOfTaskStarted;
         } finally {
