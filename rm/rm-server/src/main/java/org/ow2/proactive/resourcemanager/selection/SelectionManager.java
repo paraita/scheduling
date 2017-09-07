@@ -232,6 +232,7 @@ public abstract class SelectionManager {
     private NodeSet doSelectNodes(Criteria criteria, Client client) {
         boolean hasScripts = criteria.getScripts() != null && criteria.getScripts().size() > 0;
         boolean loggerIsDebugEnabled = logger.isDebugEnabled();
+        long startTime = System.currentTimeMillis();
         if (loggerIsDebugEnabled) {
             logger.debug(client + " requested " + criteria.getSize() + " nodes with " + criteria.getTopology());
             if (hasScripts) {
@@ -381,12 +382,13 @@ public abstract class SelectionManager {
                                                                                                                                  .size() +
                                                                                                                     " extra nodes"
                                                                                                                   : "";
+            long endTime = System.currentTimeMillis();
             logger.info(client + " requested " + criteria.getSize() + " nodes with " + criteria.getTopology() +
                         " and will get " + selectedNodes.size() + " nodes " + extraNodes + " [freeNodes:" +
                         freeNodes.size() + ";filteredNodes:" + filteredNodes.size() + ";reordered after policy:" +
                         afterPolicyNodes.size() + ";selection script present:" + hasScripts +
                         ";nodes filtered by selection script:" + matchedNodes.size() + ";selectedNodes:" +
-                        selectedNodes.size() + "]");
+                        selectedNodes.size() + "] PARAITAAAA [doSelectNodes:" + (endTime - startTime) + " ms]");
         }
 
         if (loggerIsDebugEnabled) {
