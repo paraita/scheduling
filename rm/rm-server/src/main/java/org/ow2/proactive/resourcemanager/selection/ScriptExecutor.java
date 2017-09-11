@@ -128,8 +128,8 @@ public class ScriptExecutor implements Callable<Node> {
                         if (scriptResult != null && scriptResult.errorOccured()) {
                             nodeMatch = false;
                             exception = new ScriptException(scriptResult.getException());
-                            logger.warn(rmnode.getNodeURL() + " : exception during the script execution",
-                                        scriptResult.getException());
+                            logger.warn(rmnode.getNodeURL() + " : exception during the script execution (" +
+                                        script.display() + ")", scriptResult.getException());
                             break;
                         }
 
