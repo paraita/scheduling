@@ -300,7 +300,7 @@ public final class SchedulingMethodImpl implements SchedulingMethod {
                 }
             }
             long endTimeLoop = System.currentTimeMillis();
-            logger.info("PARAITAAAA [while taskRetrievedFromPolicy_not_empty:" + (endTimeLoop - startTimeLoop) +
+            logger.info("PARAITAAAA [while_taskRetrievedFromPolicy_not_empty:" + (endTimeLoop - startTimeLoop) +
                         " ms]");
 
             return numberOfTaskStarted;
