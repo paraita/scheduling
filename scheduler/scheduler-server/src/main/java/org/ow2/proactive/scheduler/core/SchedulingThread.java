@@ -28,11 +28,14 @@ package org.ow2.proactive.scheduler.core;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
 import org.ow2.proactive.scheduler.common.SchedulerStatus;
 import org.ow2.proactive.scheduler.core.properties.PASchedulerProperties;
 
 
 public final class SchedulingThread extends Thread {
+
+    public static final Logger logger = Logger.getLogger(SchedulingThread.class);
 
     private static final int SCHEDULER_TIME_OUT = PASchedulerProperties.SCHEDULER_TIME_OUT.getValueAsInt();
 
@@ -54,7 +57,12 @@ public final class SchedulingThread extends Thread {
                 tasksStarted = false;
                 if (service.status == SchedulerStatus.STARTED || service.status == SchedulerStatus.PAUSED ||
                     service.status == SchedulerStatus.STOPPED) {
-                    tasksStarted = schedulingMethod.schedule() > 0;
+                    long start = System.currentTimeMillis();
+                    int nbTasksStarted = schedulingMethod.schedule();
+                    tasksStarted = nbTasksStarted > 0;
+                    long end = System.currentTimeMillis();
+                    logger.info("PARAITAAAA [schedule:" + (end - start) + " ms] [nb tasks started =" + nbTasksStarted +
+                                "]");
                 }
                 if (!tasksStarted) {
                     service.sleepSchedulingThread();
