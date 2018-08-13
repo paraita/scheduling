@@ -137,6 +137,7 @@ public class JobData implements Serializable {
 
     private Map<String, String> genericInformation;
 
+    @OneToMany(fetch = FetchType.EAGER)
     private Map<String, JobDataVariable> variables;
 
     private String owner;

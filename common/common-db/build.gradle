@@ -13,10 +13,10 @@ dependencies {
      *
      * The exclusion is required in order to use Javassist 3.18.2.
      */
-    compile('org.hibernate:hibernate-core:5.1.0.Final') {
+    compile('org.hibernate:hibernate-core:5.1.15.Final') {
         exclude group: 'org.javassist', module: 'javassist'
     }
-    runtime('org.hibernate:hibernate-hikaricp:5.1.0.Final') {
+    runtime('org.hibernate:hibernate-hikaricp:5.1.15.Final') {
         exclude group: 'org.javassist', module: 'javassist'
     }
 
